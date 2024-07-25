@@ -12,10 +12,7 @@ function Header() {
                 </NavLink>
             
                <div>
-                    <NavLink to="/profile" className="main-nav-item">
-                        <i className="fa fa-user-circle"></i>
-                        Profile
-                    </NavLink>
+                   
 
                     <NavLink to="/login" className="main-nav-item">
                         <i className="fa fa-user-circle"></i>
