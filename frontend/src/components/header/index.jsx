@@ -1,8 +1,22 @@
-import { NavLink } from "react-router-dom"
-import logo from '../../assets/img/argentBankLogo.webp'
-import "./header.css"
+import { NavLink } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux';
+import { setConnected, setToken} from '../../actions/signin';
+import logo from '../../assets/img/argentBankLogo.webp';
+import "./header.css";
 
 function Header() {
+    const {isConnected} = useSelector(state => state.signin.connected);
+    const dispatch = useDispatch();
+    console.log("bonjour");
+
+  
+
+    const handleSignout = () => {
+        dispatch(setConnected(false));
+        dispatch(setToken(null));
+    };
+
+
     return (
         <header>
             <nav className="main-nav">
@@ -11,13 +25,24 @@ function Header() {
                     <h1 className="sr-only">Argent Bank</h1>
                 </NavLink>
             
-               <div>
-                   
-
-                    <NavLink to="/login" className="main-nav-item">
-                        <i className="fa fa-user-circle"></i>
-                        Sign In
-                    </NavLink>
+                <div>
+                    {isConnected ? (
+                        <>
+                            <NavLink to="/profile" className="main-nav-item">
+                                <i className="fa fa-user-circle"></i>
+                                <span style={{ marginRight: '10px' }}>Hello, </span> {/* Affichage du firstName */}
+                            </NavLink>
+                            <NavLink to="/" className="main-nav-item" onClick={handleSignout}> 
+                                <i className="fa fa-sign-out"></i>
+                                Sign Out
+                            </NavLink>
+                        </>
+                    ) : (
+                        <NavLink to="/login" className="main-nav-item">
+                            <i className="fa fa-user-circle"></i>
+                            Sign In
+                        </NavLink>
+                    )}
                 </div>
              
             </nav>
