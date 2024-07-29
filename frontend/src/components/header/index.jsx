@@ -5,13 +5,17 @@ import logo from '../../assets/img/argentBankLogo.webp';
 import "./header.css";
 
 function Header() {
-    const {isConnected} = useSelector(state => state.signin.connected);
+    const isConnected = useSelector(state => {
+        console.log('isConnected:', state.signin.connected);
+        return state.signin.connected;
+    });
     const dispatch = useDispatch();
-    console.log("bonjour");
+   
 
   
 
     const handleSignout = () => {
+        console.log('Dispatching sign out');
         dispatch(setConnected(false));
         dispatch(setToken(null));
     };
