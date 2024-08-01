@@ -10,6 +10,7 @@ function Header() {
    
     const isConnected = useSelector((state) => state.signinSlice.isAuthentificated);
     const dispatch = useDispatch();
+    const firstName = useSelector((state) => state.signinSlice.firstName);
    
 
   
@@ -35,7 +36,7 @@ function Header() {
                         <>
                             <NavLink to="/profile" className="main-nav-item">
                                 <i className="fa fa-user-circle"></i>
-                                <span style={{ marginRight: '10px' }}>Hello, </span> {/* Affichage du firstName */}
+                                <span style={{ marginRight: '10px' }}>Hello {firstName}</span> {/* Affichage du firstName */}
                             </NavLink>
                             <NavLink to="/" className="main-nav-item" onClick={handleSignout}> 
                                 <i className="fa fa-sign-out"></i>
