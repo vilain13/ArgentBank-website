@@ -1,99 +1,90 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect} from 'react';
-import { useDispatch } from 'react-redux';
-import * as signinAction from '../../actions/signin';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { signinSuccess, signinFailure } from '../../store/slices';
+import { getUserProfile } from '../../api';
 import "./signinform.css";
 
-
 function Signinform() {
-
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false); // État pour "Remember me" ( si coche reprise du ussername et password dans formulaire connexion ) 
+
+    const profileAccessStatus = useSelector((state) => state.signinSlice.status);
     const navigate = useNavigate();
 
+    async function SubmitSigninForm(event) {
+        event.preventDefault();
 
-  useEffect(() => {
-    // Charger les informations de connexion du localStorage si elles existent
-    const storedUsername = localStorage.getItem('username');
-    // const storedPassword = localStorage.getItem('password');
-    if (storedUsername) {    // si rappel du password avec userName en cas de "remember me" ajouter && storePassword
-      setUserName(storedUsername);
-      //setPassword(storedPassword);  // si ajout password dans le remember me
-      setRememberMe(true);
-    }
-  }, []);
+        const submitLog = {
+            email: username,
+            password: password,
+        };
 
+        const dataSignin = JSON.stringify(submitLog);
 
+        try {
+            const loginResponse = await fetch('http://localhost:3001/api/v1/user/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: dataSignin,
+            });
 
-  async function SubmitSigninForm(event) {
-    event.preventDefault();
+            const response = await loginResponse.json();
+            console.log('reponse totale', response);
 
-    const submitLog = {
-        email: username,
-        password: password,
-    };
+            if (response.status === 200) {
+                console.log('Reponse:', response);
+                const receivedToken = response.body.token;
+                console.log('token reçu:', receivedToken);
 
-    const dataSignin = JSON.stringify(submitLog);
+                try {
+                    const userProfile = await getUserProfile(receivedToken);
+                    console.log('Profil utilisateur:', userProfile);
 
-    await fetch('http://localhost:3001/api/v1/user/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: dataSignin,
-    })
+                    const { firstName, lastName, userName} = userProfile.body;
 
-      .then((resp) => resp.json())
-      .then((response) => {
-          console.log(response); // Ajout
-          if (response.status === 200) {
-              if (error) {
-                  setError(false);
-              }
-              dispatch(signinAction.setToken(response.body.token));
-              dispatch(signinAction.setConnected(true));
-
-            // Enregistre les informations de connexion si "Remember me" est coché
-            if (rememberMe) {
-              localStorage.setItem('username', username);
-              // localStorage.setItem('password', password);   // si ajout password dans le remember me
+                    dispatch(signinSuccess({ 
+                      token: receivedToken, 
+                      firstName: firstName,
+                      lastName: lastName,
+                      userName: userName,
+                    }));
+                    
+                    navigate('/profile');
+                } catch (error) {
+                    console.error('Erreur lors de la récupération du profil utilisateur:', error);
+                    dispatch(signinFailure('failed'));
+                }
             } else {
-              localStorage.removeItem('username');
-              // localStorage.removeItem('password');    // si ajout password dans le remember me
+                dispatch(signinFailure('failed'));
+                setPassword('');
             }
-
-
-              navigate('/profile');
-          } else {
-              setError(true);
-              setPassword(''); 
-          }
-      });
-  }
+        } catch (error) {
+            console.error('Erreur lors de la connexion:', error);
+            dispatch(signinFailure('failed'));
+        }
+    }
 
     return (
-        <form onSubmit={(event) => SubmitSigninForm(event)}>
-        <div className="input-wrapper">
-          <label htmlFor="username">Username</label>
-          <input type="text" id="username"  onChange={(e) => setUserName(e.target.value)} value={username} />
-        </div>
-        <div className="input-wrapper">
-          <label htmlFor="password">Password</label>
-          <input type="password" id="password" onChange={(e) => setPassword(e.target.value)} value={password} />
-        </div>
-        <div className="input-remember">
-          <input type="checkbox" id="remember-me" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} /><label htmlFor="remember-me">Remember me</label>
-        </div>
-        <div className="signin-form-error">
-                {error ? (
-                    <p>Erreur d'identifiant ou de mot de passe. Réessayez !!</p>
-                ) : null}
+        <form onSubmit={SubmitSigninForm}>
+            <div className="input-wrapper">
+                <label htmlFor="username">Username</label>
+                <input type="text" id="username" onChange={(e) => setUserName(e.target.value)} value={username} />
             </div>
-        <button className="sign-in-button">Sign In</button>
-      </form>
-    )
+            <div className="input-wrapper">
+                <label htmlFor="password">Password</label>
+                <input type="password" id="password" onChange={(e) => setPassword(e.target.value)} value={password} />
+            </div>
+            <div className="input-remember">
+                <input type="checkbox" id="remember-me" /><label>Remember me</label>
+            </div>
+            <div className="signin-form-error">
+                {profileAccessStatus === 'failed' && <p>Erreur d'identifiant ou de mot de passe. Réessayez !!!</p>}
+            </div>
+            <button className="sign-in-button">Sign In</button>
+        </form>
+    );
 }
-
 
 export default Signinform;

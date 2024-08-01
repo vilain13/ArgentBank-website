@@ -1,14 +1,14 @@
-
 import { NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { signout } from '../../store/slices';
-//import { setConnected, setToken} from '../../actions/signin';
+import { setConnected, setToken} from '../../actions/signin';
 import logo from '../../assets/img/argentBankLogo.webp';
 import "./header.css";
 
 function Header() {
-   
-    const isConnected = useSelector((state) => state.signinSlice.isAuthentificated);
+    const isConnected = useSelector(state => {
+        console.log('isConnected:', state.signin.connected);
+        return state.signin.connected;
+    });
     const dispatch = useDispatch();
    
 
@@ -16,9 +16,8 @@ function Header() {
 
     const handleSignout = () => {
         console.log('Dispatching sign out');
-        dispatch(signout('logout'));
-       // dispatch(setConnected(false));
-        //dispatch(setToken(null));
+        dispatch(setConnected(false));
+        dispatch(setToken(null));
     };
 
 
