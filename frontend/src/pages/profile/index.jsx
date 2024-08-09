@@ -4,9 +4,7 @@ import "./profile.css"
 
 function Profile() {
     return (
-      
             <main className="main bg-dark">
-            
                <Useredit />
                 <h2 className="sr-only">Accounts</h2>
                 <section className="account">
@@ -38,8 +36,7 @@ function Profile() {
                     <div className="account-content-wrapper cta">
                         <button className="transaction-button">View transactions</button>
                     </div>
-                </section>
-                
+                </section> 
             </main>
     )    
 }

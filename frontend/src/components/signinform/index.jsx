@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { signinSuccess, signinFailure } from '../../store/slices';
+import { useDispatch} from 'react-redux';
+import { signinSuccess, } from '../../store/slices';
 import { getUserProfile } from '../../api';
 import "./signinform.css";
 
@@ -9,8 +9,7 @@ function Signinform() {
     const dispatch = useDispatch();
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
-
-    const profileAccessStatus = useSelector((state) => state.signinSlice.status);
+    const [error, setError] = useState(null); // Ajout de l'état local pour afficher l'erreur d'identifint et/ou password
     const navigate = useNavigate();
 
     async function SubmitSigninForm(event) {
@@ -22,14 +21,13 @@ function Signinform() {
         };
 
         const dataSignin = JSON.stringify(submitLog);
-
         try {
+
             const loginResponse = await fetch('http://localhost:3001/api/v1/user/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: dataSignin,
             });
-
             const response = await loginResponse.json();
             console.log('reponse totale', response);
 
@@ -54,15 +52,15 @@ function Signinform() {
                     navigate('/profile');
                 } catch (error) {
                     console.error('Erreur lors de la récupération du profil utilisateur:', error);
-                    dispatch(signinFailure('failed'));
+                    setError("Erreur lors de la récupération du profil utilisateur");
                 }
             } else {
-                dispatch(signinFailure('failed'));
+                setError("Erreur d'identifiant ou de mot de passe. Réessayez !!!");
                 setPassword('');
             }
         } catch (error) {
             console.error('Erreur lors de la connexion:', error);
-            dispatch(signinFailure('failed'));
+            setError("Erreur lors de la connexion. Veuillez réessayer.");
         }
     }
 
@@ -80,7 +78,7 @@ function Signinform() {
                 <input type="checkbox" id="remember-me" /><label>Remember me</label>
             </div>
             <div className="signin-form-error">
-                {profileAccessStatus === 'failed' && <p>Erreur d'identifiant ou de mot de passe. Réessayez !!!</p>}
+                {error && <p>Erreur d'identifiant ou de mot de passe. Réessayez !!!</p>}
             </div>
             <button className="sign-in-button">Sign In</button>
         </form>

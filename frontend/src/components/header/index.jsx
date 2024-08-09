@@ -2,24 +2,17 @@
 import { NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { signout } from '../../store/slices';
-//import { setConnected, setToken} from '../../actions/signin';
 import logo from '../../assets/img/argentBankLogo.webp';
 import "./header.css";
 
 function Header() {
    
-    const isConnected = useSelector((state) => state.signinSlice.isAuthentificated);
+    const token = useSelector((state) => state.signinSlice.token);
     const dispatch = useDispatch();
     const firstName = useSelector((state) => state.signinSlice.firstName);
-   
-
-  
-
     const handleSignout = () => {
         console.log('Dispatching sign out');
         dispatch(signout('logout'));
-       // dispatch(setConnected(false));
-        //dispatch(setToken(null));
     };
 
 
@@ -32,7 +25,7 @@ function Header() {
                 </NavLink>
             
                 <div>
-                    {isConnected ? (
+                    {token ? (
                         <>
                             <NavLink to="/profile" className="main-nav-item">
                                 <i className="fa fa-user-circle"></i>
