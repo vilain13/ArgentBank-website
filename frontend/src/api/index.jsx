@@ -16,8 +16,6 @@ export async function getUserProfile(token) {
         }
 
         const data = await response.json();
-        // Log les données JSON renvoyées
-        console.log("Données JSON reçues:", data);
 
         return data;
     } catch (error) {

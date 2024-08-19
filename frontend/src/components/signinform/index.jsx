@@ -9,7 +9,7 @@ function Signinform() {
     const dispatch = useDispatch();
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(null); // Ajout de l'état local pour afficher l'erreur d'identifint et/ou password
+    const [error, setError] = useState(null); // Ajout de l'état local pour afficher l'erreur d'identifiant et/ou password
     const navigate = useNavigate();
 
     async function SubmitSigninForm(event) {
@@ -29,16 +29,12 @@ function Signinform() {
                 body: dataSignin,
             });
             const response = await loginResponse.json();
-            console.log('reponse totale', response);
 
             if (response.status === 200) {
-                console.log('Reponse:', response);
                 const receivedToken = response.body.token;
-                console.log('token reçu:', receivedToken);
 
                 try {
                     const userProfile = await getUserProfile(receivedToken);
-                    console.log('Profil utilisateur:', userProfile);
 
                     const { firstName, lastName, userName} = userProfile.body;
 
@@ -51,7 +47,7 @@ function Signinform() {
                     
                     navigate('/profile');
                 } catch (error) {
-                    console.error('Erreur lors de la récupération du profil utilisateur:', error);
+                    console.error('Erreur lors de la récupération du profil utilisateur:');
                     setError("Erreur lors de la récupération du profil utilisateur");
                 }
             } else {
@@ -59,7 +55,7 @@ function Signinform() {
                 setPassword('');
             }
         } catch (error) {
-            console.error('Erreur lors de la connexion:', error);
+            console.error('Erreur lors de la connexion:');
             setError("Erreur lors de la connexion. Veuillez réessayer.");
         }
     }
@@ -78,7 +74,7 @@ function Signinform() {
                 <input type="checkbox" id="remember-me" /><label>Remember me</label>
             </div>
             <div className="signin-form-error">
-                {error && <p>Erreur d'identifiant ou de mot de passe. Réessayez !!!</p>}
+                {error && <p>{error}</p>}
             </div>
             <button className="sign-in-button">Sign In</button>
         </form>

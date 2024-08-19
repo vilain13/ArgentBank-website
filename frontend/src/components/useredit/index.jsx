@@ -11,27 +11,29 @@ function Useredit() {
     const { firstName, lastName, userName: currentUserName, newUserName, isEditing, token } = useSelector((state) => state.signinSlice); // avec valeurs déstructurées directement à partir de l'état de votre slice Redux
 
   
-    
+    // lancement mode userEdit
     const handleEditClick = () => {
         dispatch(updateNewUserName(currentUserName));
         dispatch(startEditing());
       };
-    
-      const handleCancelClick = () => {
-        dispatch(cancelEditing());
-      };
-
-      const handleSaveClick = async (event) => {
-        event.preventDefault();
+    // action bouton Cancel dans userEdit
+    const handleCancelClick = (event) => {
+      event.preventDefault();   // evite l'avertissement dans la console "formulaire non connecté"
+      dispatch(cancelEditing());
       
-        try {
-          await changeUsername(newUserName, token);
-          dispatch(updateUserName(newUserName));
-          dispatch(cancelEditing());
-        } catch (error) {
-          console.error('Echec de mise à jour du userName:', error);
-        }
-      };
+    };
+    // sauvegarde userName
+    const handleSaveClick = async (event) => {
+      event.preventDefault();  // évite de ré initialiser la page et donc de ré initialiser les states
+    
+      try {
+        await changeUsername(newUserName, token);
+        dispatch(updateUserName(newUserName));
+        dispatch(cancelEditing());
+      } catch (error) {
+        console.error('Echec de mise à jour du userName:', error);
+      }
+    };
 
     return (
         <div className="header">

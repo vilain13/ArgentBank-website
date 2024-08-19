@@ -11,8 +11,7 @@ function Header() {
     const dispatch = useDispatch();
     const firstName = useSelector((state) => state.signinSlice.firstName);
     const handleSignout = () => {
-        console.log('Dispatching sign out');
-        dispatch(signout('logout'));
+        dispatch(signout());
     };
 
 
@@ -29,7 +28,7 @@ function Header() {
                         <>
                             <NavLink to="/profile" className="main-nav-item">
                                 <i className="fa fa-user-circle"></i>
-                                <span style={{ marginRight: '10px' }}>Hello {firstName}</span> {/* Affichage du firstName */}
+                                <span style={{ marginRight: '10px' }}>{firstName}</span> {/* Affichage du firstName */}
                             </NavLink>
                             <NavLink to="/" className="main-nav-item" onClick={handleSignout}> 
                                 <i className="fa fa-sign-out"></i>
